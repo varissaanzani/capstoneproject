@@ -21,7 +21,7 @@ export default function Navbar() {
 
   return (
     <header style={{ display: 'flex', alignItems: 'center', padding: '10px 20px', backgroundColor: '#eeeeee' }}>
-      <img src="/fti-logo.png" alt="FTI Logo" style={{ height: '60px', marginRight: '20px' }} />
+      <img src="/fti.png" alt="FTI Logo" style={{ height: '40px', marginRight: '20px' }} />
       <div style={{ flexGrow: 1 }}></div>
       <nav>
         <Link to="/" style={location.pathname === '/' ? { ...navLink, ...activeStyle } : navLink}>Beranda</Link>
