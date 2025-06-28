@@ -16,7 +16,7 @@ export default function Download() {
         setLoading(true);
         setError(null);
         const res = await getSuratById(id);
-        setSurat(res.data.data);
+        setSurat(res.data);
       } catch (err) {
         setError('Gagal memuat data surat. Silakan coba lagi.');
         console.error('Error fetching surat data:', err);

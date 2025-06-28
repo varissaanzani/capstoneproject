@@ -14,11 +14,11 @@ export default function AdminSurat() {
       setLoading(true);
       setError(null);
       const res = await getAllSurat();
-      const mapped = (res.data.data || []).map((item) => ({
+      const mapped = (res.data || []).map((item) => ({
         id: item.id,
+        nama: item.nama,
         jenis: item.jenisSurat,
         deskripsi: item.keterangan,
-        alasan: item.nama,
         tanggal: item.tanggal || '-',
         status: item.status || 'Diproses',
       }));
@@ -67,27 +67,20 @@ export default function AdminSurat() {
             <tr key={surat.id}>
               <td style={{ padding: 10, border: '1px solid #dee2e6' }}>{surat.id}</td>
               <td style={{ padding: 10, border: '1px solid #dee2e6' }}>{surat.nama}</td>
-              <td style={{ padding: 10, border: '1px solid #dee2e6' }}>{surat.jenisSurat}</td>
+              <td style={{ padding: 10, border: '1px solid #dee2e6' }}>{surat.jenis}</td>
               <td style={{ padding: 10, border: '1px solid #dee2e6' }}>{surat.status || 'Diproses'}</td>
               <td style={{ padding: 10, border: '1px solid #dee2e6' }}>
-                {statusOptions.map(opt => (
-                  <button
-                    key={opt}
-                    onClick={() => handleStatusChange(surat.id, opt)}
-                    disabled={updatingId === surat.id || (surat.status || 'Diproses') === opt}
-                    style={{
-                      marginRight: 8,
-                      padding: '6px 12px',
-                      background: (surat.status || 'Diproses') === opt ? '#6c757d' : '#28a745',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: 4,
-                      cursor: updatingId === surat.id ? 'not-allowed' : 'pointer',
-                    }}
-                  >
-                    {opt}
-                  </button>
-                ))}
+                <select
+                  value={surat.status || 'Diproses'}
+                  onChange={(e) => handleStatusChange(surat.id, e.target.value)}
+                  disabled={updatingId === surat.id}
+                  style={{ padding: '5px', borderRadius: '3px' }}
+                >
+                  {statusOptions.map(status => (
+                    <option key={status} value={status}>{status}</option>
+                  ))}
+                </select>
+                {updatingId === surat.id && <span style={{ marginLeft: '10px' }}>Updating...</span>}
               </td>
             </tr>
           ))}

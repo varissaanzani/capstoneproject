@@ -15,7 +15,7 @@ export default function DetailSurat() {
         setLoading(true);
         setError(null);
         const res = await getSuratById(id);
-        const item = res.data.data;
+        const item = res.data;
         // Mapping agar field sesuai frontend
         const mapped = item && {
           id: item.id,
@@ -238,7 +238,7 @@ export default function DetailSurat() {
           }}>
             <div style={{ marginBottom: '15px' }}>
               <p style={{ margin: '0 0 5px 0', fontWeight: 'bold', color: '#495057' }}>
-                Alasan Permohonan:
+                Nama Pemohon:
               </p>
               <p style={{ margin: '0', color: '#2d5c44' }}>{surat.alasan}</p>
             </div>

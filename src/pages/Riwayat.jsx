@@ -14,7 +14,8 @@ export default function Riwayat() {
         setError(null);
         const res = await getAllSurat();
         // Mapping data agar field sesuai dengan frontend
-        const mapped = (res.data.data || []).map((item) => ({
+        // Response sekarang langsung dari axios, tidak perlu res.data.data
+        const mapped = (res.data || []).map((item) => ({
           id: item.id,
           jenis: item.jenisSurat,
           deskripsi: item.keterangan,

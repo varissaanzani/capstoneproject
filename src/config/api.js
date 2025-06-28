@@ -1,81 +1,114 @@
+import axios from 'axios';
 import { getConfig } from './environment.js';
 
-// Konfigurasi API untuk koneksi ke backend
+// Konfigurasi API untuk koneksi ke backend menggunakan axios
 const API_CONFIG = {
   // URL backend dari environment config
   BASE_URL: getConfig().BACKEND_URL,
+  
+  // Timeout untuk request (dalam milliseconds)
+  TIMEOUT: getConfig().REQUEST_TIMEOUT,
   
   // Headers default
   DEFAULT_HEADERS: {
     'Content-Type': 'application/json',
     // 'Authorization': 'Bearer YOUR_TOKEN', // Uncomment jika ada authentication
   },
-  
-  // Timeout untuk request (dalam milliseconds)
-  TIMEOUT: getConfig().REQUEST_TIMEOUT,
 };
 
-// Fungsi untuk membuat request ke API
-export const apiRequest = async (endpoint, options = {}) => {
-  const url = `${API_CONFIG.BASE_URL}${endpoint}`;
-  
-  const config = {
-    headers: {
-      ...API_CONFIG.DEFAULT_HEADERS,
-      ...options.headers,
-    },
-    timeout: API_CONFIG.TIMEOUT,
-    ...options,
-  };
+// Membuat instance axios dengan konfigurasi
+const apiClient = axios.create({
+  baseURL: API_CONFIG.BASE_URL,
+  timeout: API_CONFIG.TIMEOUT,
+  headers: API_CONFIG.DEFAULT_HEADERS,
+});
 
+// Request interceptor untuk menambahkan headers atau logging
+apiClient.interceptors.request.use(
+  (config) => {
+    console.log('API Request:', config.method?.toUpperCase(), config.url);
+    return config;
+  },
+  (error) => {
+    console.error('Request Error:', error);
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor untuk handling error
+apiClient.interceptors.response.use(
+  (response) => {
+    console.log('API Response:', response.status, response.config.url);
+    return response;
+  },
+  (error) => {
+    console.error('API Response Error:', error.response?.status, error.message);
+    return Promise.reject(error);
+  }
+);
+
+// Fungsi helper untuk request GET
+export const apiGet = async (endpoint) => {
   try {
-    const response = await fetch(url, config);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    return await response.json();
+    const response = await apiClient.get(endpoint);
+    return response.data;
   } catch (error) {
-    console.error('API Request Error:', error);
     throw error;
   }
 };
 
-// Fungsi helper untuk request GET
-export const apiGet = (endpoint) => {
-  return apiRequest(endpoint, { method: 'GET' });
-};
-
 // Fungsi helper untuk request POST
-export const apiPost = (endpoint, data) => {
-  return apiRequest(endpoint, {
-    method: 'POST',
-    body: JSON.stringify(data),
-  });
+export const apiPost = async (endpoint, data) => {
+  try {
+    const response = await apiClient.post(endpoint, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 // Fungsi helper untuk request PUT
-export const apiPut = (endpoint, data) => {
-  return apiRequest(endpoint, {
-    method: 'PUT',
-    body: JSON.stringify(data),
-  });
+export const apiPut = async (endpoint, data) => {
+  try {
+    const response = await apiClient.put(endpoint, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Fungsi helper untuk request PATCH
+export const apiPatch = async (endpoint, data) => {
+  try {
+    const response = await apiClient.patch(endpoint, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 // Fungsi helper untuk request DELETE
-export const apiDelete = (endpoint) => {
-  return apiRequest(endpoint, { method: 'DELETE' });
+export const apiDelete = async (endpoint) => {
+  try {
+    const response = await apiClient.delete(endpoint);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
-// Endpoints untuk surat (sesuaikan dengan backend teman Anda)
+// Endpoints untuk surat (sesuaikan dengan backend)
 export const SURAT_ENDPOINTS = {
   GET_ALL: '/api/surat',
   GET_BY_ID: (id) => `/api/surat/${id}`,
-  CREATE: '/api/surat',
+  CREATE: '/api/surat/ajukan',
   UPDATE: (id) => `/api/surat/${id}`,
   DELETE: (id) => `/api/surat/${id}`,
+  UPDATE_STATUS: (id) => `/api/surat/${id}/status`,
   DOWNLOAD: (id) => `/api/surat/${id}/download`,
 };
+
+// Export axios instance untuk penggunaan langsung jika diperlukan
+export { apiClient };
 
 export default API_CONFIG; 
